@@ -502,8 +502,6 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // The following code for sliding background pizzas was pulled from Ilya's demo found at:
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
-
-
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
   frame++;
@@ -540,7 +538,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
   //at each moment of time only a set number of scrolling pizzas show up on the screen simultaneously - so we can limit their number
-  var numPizzas = screen.height/100 * cols;
+  var numPizzas = screen.height/100 * screen.width/73.333;
   for (var i = 0; i < numPizzas; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
@@ -552,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
   //Sliding pizzas are only generated once when the page loads - it makes sense to also generate the array once, not everytime the updatePositions function fires
-  //Source:
+  //Source: https://discussions.udacity.com/t/having-trouble-getting-60fps/188782/3
   items = document.getElementsByClassName('mover');
   console.log(items);
   updatePositions();
