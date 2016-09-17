@@ -401,7 +401,7 @@ var pizzaElementGenerator = function(i) {
 // resizePizzas(size) is called when the slider in the "Our Pizzas" section of the website moves.
 //instead of calling the same DOM element #pizzaSize everytime we store it in a variable
 //also, use getElementById instead of querySelector
-var pizzaSize = document.getElementById("#pizzaSize");
+var pizzaSize = document.getElementById("pizzaSize");
 var resizePizzas = function(size) {
   window.performance.mark("mark_start_resize");   // User Timing API function
 
@@ -538,7 +538,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
   //at each moment of time only a set number of scrolling pizzas show up on the screen simultaneously - so we can limit their number
-  var numPizzas = screen.height/100 * screen.width/73.333;
+  var numPizzas = (screen.height/100) * cols;
+  console.log(numPizzas);
   for (var i = 0; i < numPizzas; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
@@ -552,6 +553,5 @@ document.addEventListener('DOMContentLoaded', function() {
   //Sliding pizzas are only generated once when the page loads - it makes sense to also generate the array once, not everytime the updatePositions function fires
   //Source: https://discussions.udacity.com/t/having-trouble-getting-60fps/188782/3
   items = document.getElementsByClassName('mover');
-  console.log(items);
   updatePositions();
 });
