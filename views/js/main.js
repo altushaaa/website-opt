@@ -501,7 +501,10 @@ function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
-  var items = document.querySelectorAll('.mover');
+  //Instead of accessing the same DOM element every time (since it's slower), it's better to store it in a variable and re-use
+  var items = document.getElementByClassName('.mover');
+  console.log(items);
+
   for (var i = 0; i < items.length; i++) {
     var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
