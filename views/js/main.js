@@ -399,6 +399,9 @@ var pizzaElementGenerator = function(i) {
 };
 
 // resizePizzas(size) is called when the slider in the "Our Pizzas" section of the website moves.
+//instead of calling the same DOM element #pizzaSize everytime we store it in a variable
+//also, use getElementById instead of querySelector
+var pizzaSize = document.getElementById("#pizzaSize");
 var resizePizzas = function(size) {
   window.performance.mark("mark_start_resize");   // User Timing API function
 
@@ -406,13 +409,13 @@ var resizePizzas = function(size) {
   function changeSliderLabel(size) {
     switch(size) {
       case "1":
-        document.querySelector("#pizzaSize").innerHTML = "Small";
+        pizzaSize.innerHTML = "Small";
         return;
       case "2":
-        document.querySelector("#pizzaSize").innerHTML = "Medium";
+        pizzaSize.innerHTML = "Medium";
         return;
       case "3":
-        document.querySelector("#pizzaSize").innerHTML = "Large";
+        pizzaSize.innerHTML = "Large";
         return;
       default:
         console.log("bug in changeSliderLabel");
@@ -448,11 +451,14 @@ var resizePizzas = function(size) {
   }
 
   // Iterates through pizza elements on the page and changes their widths
+  //instead of accessing the DOM element '.randomPizzaContainer' several times each loop iteration, we will define it outside the loop once
+  var pizzaContainer = document.getElementsByClassName('randomPizzaContainer');
   function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+    console.log(pizzaContainer);
+    for (var i = 0; i < pizzaContainer.length; i++) {
+      var dx = determineDx(pizzaContainer[i], size);
+      var newwidth = (pizzaContainer[i].offsetWidth + dx) + 'px';
+      pizzaContainer[i].style.width = newwidth;
     }
   }
 
@@ -496,18 +502,23 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // The following code for sliding background pizzas was pulled from Ilya's demo found at:
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
+
+
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
-  //Instead of accessing the same DOM element every time (since it's slower), it's better to store it in a variable and re-use
-  var items = document.getElementByClassName('.mover');
-  console.log(items);
+  //We want to make code inside the loop as small as possible, so we move all var outside of the loop
+  //Source: https://discussions.udacity.com/t/having-trouble-getting-60fps/188782/3
+  var scrollNum = document.body.scrollTop/1250;
+  var phase = [];
+  for (var i = 0; i < 5; i++) {
+    phase.push(Math.sin(scrollNum + i));
+  }
 
   for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+    items[i].style.left = items[i].basicLeft + 100 * phase[i%5] + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -523,11 +534,14 @@ function updatePositions() {
 // runs updatePositions on scroll
 window.addEventListener('scroll', updatePositions);
 
+var item=[];
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
+  //at each moment of time only a set number of scrolling pizzas show up on the screen simultaneously - so we can limit their number
+  var numPizzas = screen.height/100 * cols;
+  for (var i = 0; i < numPizzas; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
@@ -537,5 +551,9 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
+  //Sliding pizzas are only generated once when the page loads - it makes sense to also generate the array once, not everytime the updatePositions function fires
+  //Source:
+  items = document.getElementsByClassName('mover');
+  console.log(items);
   updatePositions();
 });
