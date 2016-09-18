@@ -12,17 +12,17 @@ The challenge was to optimize this online portfolio for speed! In particular, op
 3. Applied the optimizations suggested by PageSpeed Insights:
 * Removed render-blocking css and JavaScript in three ways
 
-- Used media query for print.css:
+Used media query for print.css:
 ```html
 <link href="css/print.css" rel="stylesheet" media="print">
 ```
 
-- Minified and in-lined style.css:
+Minified style.css with cssminifier.com and in-lined in html:
 ```html
 <style>html{font-size:100%;overflow-y:scroll;-webkit-tap-highlight-color:rgba(0,0,0,0);-ms-text-size-adjust:100%;-webkit-text-size-adjust:none}body{margin:0;font-size:14px;line-height:1.61;font-weight:400}body,button,input,select,textarea{font-family:'Open Sans',sans-serif;color:#333}a{color:#12C}a:visited{color:#61C}a:focus{outline:thin dotted}a:hover,a:active{color:#c00;outline:0}b,strong{font-weight:700}pre,code{font-family:monospace,monospace;font-size:1em}ul,ol{margin:1em 0;padding:0 0 0 20px}img{b...(line truncated)...
 ```
 
-- Moved GoogleFonts css to the bottom of the document
+Moved GoogleFonts css to the bottom of the document
 
 * Applied `async` property to non render-critical JavaScript:
 ```html
