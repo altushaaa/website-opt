@@ -399,6 +399,12 @@ var pizzaElementGenerator = function(i) {
 };
 
 // resizePizzas(size) is called when the slider in the "Our Pizzas" section of the website moves.
+<<<<<<< HEAD
+=======
+//instead of calling the same DOM element #pizzaSize everytime we store it in a variable
+//also, use getElementById instead of querySelector
+var pizzaSize = document.getElementById("pizzaSize");
+>>>>>>> gh-pages
 var resizePizzas = function(size) {
   window.performance.mark("mark_start_resize");   // User Timing API function
 
@@ -406,6 +412,7 @@ var resizePizzas = function(size) {
   function changeSliderLabel(size) {
     switch(size) {
       case "1":
+<<<<<<< HEAD
         document.querySelector("#pizzaSize").innerHTML = "Small";
         return;
       case "2":
@@ -413,6 +420,15 @@ var resizePizzas = function(size) {
         return;
       case "3":
         document.querySelector("#pizzaSize").innerHTML = "Large";
+=======
+        pizzaSize.innerHTML = "Small";
+        return;
+      case "2":
+        pizzaSize.innerHTML = "Medium";
+        return;
+      case "3":
+        pizzaSize.innerHTML = "Large";
+>>>>>>> gh-pages
         return;
       default:
         console.log("bug in changeSliderLabel");
@@ -448,11 +464,26 @@ var resizePizzas = function(size) {
   }
 
   // Iterates through pizza elements on the page and changes their widths
+<<<<<<< HEAD
   function changePizzaSizes(size) {
     for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
       var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
       var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
       document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+=======
+  //instead of accessing the DOM element '.randomPizzaContainer' several times each loop iteration, we will define it outside the loop once
+  var pizzaContainer = document.getElementsByClassName('randomPizzaContainer');
+  function changePizzaSizes(size) {
+    console.log(pizzaContainer);
+    //Moved dx outside of the loop since we only need to calculate it once for each resize
+    var dx = determineDx(pizzaContainer[0], size);
+    //Google DevTools suggested that the forced reflow was the likely performance bottleneck
+    //Moved it out of the loop since we only need to calculate the newwidth once for each resize
+    var newwidth = (pizzaContainer[1].offsetWidth + dx) + 'px';
+    var pizzasNum =  pizzaContainer.length;
+    for (var i = 0; i < pizzasNum; i++) {
+      pizzaContainer[i].style.width = newwidth;
+>>>>>>> gh-pages
     }
   }
 
@@ -501,10 +532,26 @@ function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
+<<<<<<< HEAD
   var items = document.querySelectorAll('.mover');
   for (var i = 0; i < items.length; i++) {
     var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+=======
+  //We want to make code inside the loop as small as possible, so we move all var outside of the loop
+  //Source: https://discussions.udacity.com/t/having-trouble-getting-60fps/188782/3
+  var scrollNum = document.body.scrollTop/1250;
+  var phase = [];
+  for (var i = 0; i < 5; i++) {
+    phase.push(Math.sin(scrollNum + i));
+  }
+  var movingPizzas = items.length;
+
+  //Instead of re-triggering the Layout with style.left every time, we can use style.transform property to reduce the need for it
+  //Since the pizzas move only along the X-axis, we can use translateX property value
+  for (var i = 0; i < movingPizzas; i++) {
+    items[i].style.transform = 'translateX('+ (100 * phase[i%5]) + 'px)';
+>>>>>>> gh-pages
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -520,19 +567,42 @@ function updatePositions() {
 // runs updatePositions on scroll
 window.addEventListener('scroll', updatePositions);
 
+<<<<<<< HEAD
+=======
+var items=[];
+>>>>>>> gh-pages
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
+<<<<<<< HEAD
   for (var i = 0; i < 200; i++) {
+=======
+  //at each moment of time only a set number of scrolling pizzas show up on the screen simultaneously - so we can limit their number
+  var numPizzas = (screen.height/100) * cols;
+  console.log(numPizzas);
+  for (var i = 0; i < numPizzas; i++) {
+>>>>>>> gh-pages
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
     elem.style.width = "73.333px";
+<<<<<<< HEAD
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
+=======
+    //elem.basicLeft = (i % cols) * s;
+    //Set the left position of each moving pizza
+    elem.style.left = (i % cols) * s +'px';
+    elem.style.top = (Math.floor(i / cols) * s) + 'px';
+    document.querySelector("#movingPizzas1").appendChild(elem);
+  }
+  //Sliding pizzas are only generated once when the page loads - it makes sense to also generate the array once, not everytime the updatePositions function fires
+  //Source: https://discussions.udacity.com/t/having-trouble-getting-60fps/188782/3
+  items = document.getElementsByClassName('mover');
+>>>>>>> gh-pages
   updatePositions();
 });
