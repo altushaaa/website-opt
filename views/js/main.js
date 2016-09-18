@@ -455,9 +455,13 @@ var resizePizzas = function(size) {
   var pizzaContainer = document.getElementsByClassName('randomPizzaContainer');
   function changePizzaSizes(size) {
     console.log(pizzaContainer);
-    for (var i = 0; i < pizzaContainer.length; i++) {
-      var dx = determineDx(pizzaContainer[i], size);
-      var newwidth = (pizzaContainer[i].offsetWidth + dx) + 'px';
+    //Moved dx outside of the loop since we only need to calculate it once for each resize
+    var dx = determineDx(pizzaContainer[0], size);
+    //Google DevTools suggested that the forced reflow was the likely performance bottleneck
+    //Moved it out of the loop since we only need to calculate the newwidth once for each resize
+    var newwidth = (pizzaContainer[1].offsetWidth + dx) + 'px';
+    var pizzasNum =  pizzaContainer.length;
+    for (var i = 0; i < pizzasNum; i++) {
       pizzaContainer[i].style.width = newwidth;
     }
   }
@@ -514,9 +518,12 @@ function updatePositions() {
   for (var i = 0; i < 5; i++) {
     phase.push(Math.sin(scrollNum + i));
   }
+  var movingPizzas = items.length;
 
-  for (var i = 0; i < items.length; i++) {
-    items[i].style.left = items[i].basicLeft + 100 * phase[i%5] + 'px';
+  //Instead of re-triggering the Layout with style.left every time, we can use style.transform property to reduce the need for it
+  //Since the pizzas move only along the X-axis, we can use translateX property value
+  for (var i = 0; i < movingPizzas; i++) {
+    items[i].style.transform = 'translateX('+ (100 * phase[i%5]) + 'px)';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -546,7 +553,9 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
     elem.style.width = "73.333px";
-    elem.basicLeft = (i % cols) * s;
+    //elem.basicLeft = (i % cols) * s;
+    //Set the left position of each moving pizza
+    elem.style.left = (i % cols) * s +'px';
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
